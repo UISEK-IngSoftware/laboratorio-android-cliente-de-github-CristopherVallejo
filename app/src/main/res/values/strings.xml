@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Github Client</string>
+    <string name="repo_name">Nombre del repositorio</string>
+    <string name="repo_lang">Lenguaje</string>
+    <string name="repo_description">Descripción del repositorio</string>
+    <string name="test_text">Texto de prueba</string>
+
+
+
+
 </resources>
