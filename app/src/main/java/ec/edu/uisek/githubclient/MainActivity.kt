@@ -1,12 +1,10 @@
 package ec.edu.uisek.githubclient
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import ec.edu.uisek.githubclient.databinding.ActivityMainBinding
 import ec.edu.uisek.githubclient.models.Repo
 import ec.edu.uisek.githubclient.services.RetrofitClient
@@ -25,8 +23,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setupRecyclerView()
+
+        binding.newRepoFab.setOnClickListener {
+            displayNewRepoForm()
+        }
+
+
     }
+
+    override fun onResume() {
+        super.onResume()
+        setupRecyclerView()
+        fetchRepositories()
+    }
+
     private  fun setupRecyclerView(){
         reposAdapter = RepoAdapter()
         binding.reposRecyclerView.adapter = reposAdapter
@@ -48,6 +58,7 @@ class MainActivity : AppCompatActivity() {
                         404 -> "Error de recurso no encontrado"
                         else -> "Error desconocido: ${response.code()} ${response.message()}"
                     }
+                    Log.e("MainActivity", errMsg)
                     showMessage(errMsg)
                 }
             }
@@ -62,4 +73,10 @@ class MainActivity : AppCompatActivity() {
             private fun showMessage(msg: String) {
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
         }
+
+    private  fun displayNewRepoForm(){
+        val intent = Intent(this, RepoForm::class.java)
+        startActivity(intent)
+    }
+
 }
