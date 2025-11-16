@@ -10,12 +10,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/repos_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/fragment_repo_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -23,12 +21,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="Crear Nuevo Repositorio"
         app:backgroundTint="@color/Uisek_blue"
-        app:layout_constraintBaseline_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="659dp"
-        android:src="@drawable/add_24"
         app:tint="@color/white"
+        android:src="@drawable/add_24"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Circle"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

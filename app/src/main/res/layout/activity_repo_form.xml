@@ -6,7 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RepoForm">
+
     <LinearLayout
+        android:id="@+id/formLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -16,25 +18,29 @@
         android:layout_margin="16dp"
         android:orientation="vertical"
         >
+
         <EditText
             android:id="@+id/repo_name_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
             android:hint="@string/repo_name"/>
+
         <EditText
             android:id="@+id/repo_description_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:lines="5"
+            android:lines="4"
             android:hint="@string/repo_description"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="24dp"
             android:orientation="horizontal"
             >
+
             <Button
                 android:id="@+id/cancel_button"
                 android:layout_width="0dp"
@@ -50,7 +56,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/save"/>
-
 
         </LinearLayout>
 

@@ -7,28 +7,52 @@ import com.bumptech.glide.Glide
 import ec.edu.uisek.githubclient.databinding.FragmentRepoItemBinding
 import ec.edu.uisek.githubclient.models.Repo
 
+// Interfaz para comunicar las acciones de los botones a la actividad principal
+interface RepositoryActionListener {
+    fun onEdit(repo: Repo)
+    fun onDelete(owner: String, repoName: String)
+}
 
-class RepoViewHolder(private val binding: FragmentRepoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+// El ViewHolder ahora recibe el listener para manejar los clicks
+class RepoViewHolder(
+    private val binding: FragmentRepoItemBinding,
+    private val listener: RepositoryActionListener
+) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(repo: Repo) {
-            binding.repoName.text = repo.name
-            binding.repoDescription.text = repo.description ?: "No existe descripción en el repositorio"
-            binding.repoLang.text = repo.language ?: "No existe lenguaje en el repositorio"
-            Glide.with(binding.root.context)
-                .load(repo.owner.avatarUrl)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
-                .circleCrop()
-                .into(binding.repoOwnerImage)
-        }
+    fun bind(repo: Repo) {
+        binding.repoName.text = repo.name
+        // Se usa la descripción de tu segundo ejemplo para el texto de fallback
+        binding.repoDescription.text = repo.description ?: "No existe descripción en el repositorio"
+        binding.repoLang.text = repo.language ?: "No existe lenguaje en el repositorio"
+
+        // Cargar imagen con Glide
+        Glide.with(binding.root.context)
+            .load(repo.owner.avatarUrl)
+            .placeholder(R.mipmap.ic_launcher)
+            .error(R.mipmap.ic_launcher)
+            .circleCrop()
+            .into(binding.repoOwnerImage)
+
+
+        binding.ivEdit.setOnClickListener { listener.onEdit(repo) }
+        binding.ivDelete.setOnClickListener { listener.onDelete(repo.owner.login, repo.name) }
     }
-class  RepoAdapter : RecyclerView.Adapter<RepoViewHolder>() {
+}
+
+
+class RepoAdapter(private val listener: RepositoryActionListener) : RecyclerView.Adapter<RepoViewHolder>() {
 
     private var repositories: List<Repo> = emptyList()
+
 
     fun submitList(repos: List<Repo>) {
         this.repositories = repos
         notifyDataSetChanged()
+    }
+
+
+    fun UpdateRepositories(newRepositories: List<Repo>) {
+        submitList(newRepositories) // Reutilizamos submitList
     }
 
     override fun getItemCount(): Int = repositories.size
@@ -39,15 +63,11 @@ class  RepoAdapter : RecyclerView.Adapter<RepoViewHolder>() {
             parent,
             false
         )
-        return RepoViewHolder(binding)
+        // 🚨 REINTEGRACIÓN: Pasamos el listener al ViewHolder 🚨
+        return RepoViewHolder(binding, listener)
     }
 
     override fun onBindViewHolder(holder: RepoViewHolder, position: Int) {
         holder.bind(repositories[position])
-    }
-
-    fun UpdateRepositories(newRepositories: List<Repo>) {
-        repositories = newRepositories
-        notifyDataSetChanged()
     }
 }

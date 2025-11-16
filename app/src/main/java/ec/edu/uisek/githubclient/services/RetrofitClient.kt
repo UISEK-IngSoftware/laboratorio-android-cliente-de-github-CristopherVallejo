@@ -1,6 +1,5 @@
 package ec.edu.uisek.githubclient.services
 
-
 import android.util.Log
 import ec.edu.uisek.githubclient.BuildConfig
 import okhttp3.Interceptor
@@ -22,6 +21,7 @@ object RetrofitClient {
 
     /**
      * Interceptor que agrega el token de autenticación a todas las peticiones
+     * (Usando "Bearer" en lugar de "token" y gestionando la ausencia de token)
      */
     private val authInterceptor = Interceptor { chain ->
         val originalRequest = chain.request()
@@ -30,12 +30,13 @@ object RetrofitClient {
         // Si el token está configurado, agregarlo al header Authorization
         val newRequest = if (token.isNotEmpty()) {
             originalRequest.newBuilder()
+                //  CAMBIO: Usamos "Bearer" para el token
                 .addHeader("Authorization", "Bearer $token")
                 .addHeader("Accept", "application/vnd.github.v3+json")
                 .build()
         } else {
-            // Si no hay token, solo agregar el header Accept
-            Log.w(TAG, "Token de Github no configurado")
+            // Si no hay token, solo agregar el header Accept y loguear un aviso
+            Log.w(TAG, "🚨 Token de Github NO CONFIGURADO ")
             originalRequest.newBuilder()
                 .addHeader("Accept", "application/vnd.github.v3+json")
                 .build()
@@ -46,16 +47,15 @@ object RetrofitClient {
 
     /**
      * Interceptor para logging de peticiones y respuestas (útil para depuración)
+     * 🚨 CAMBIO: Se ajusta el nivel de logging basado en BuildConfig.DEBUG
      */
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor.Level.BASIC
+            HttpLoggingInterceptor.Level.BODY // Nivel detallado en debug
         } else {
-            HttpLoggingInterceptor.Level.NONE
+            HttpLoggingInterceptor.Level.NONE // Ningún log en producción (release)
         }
     }
-
-    // --- Parte visible en la segunda imagen ---
 
     /**
      * Cliente HTTP configurado con los interceptores necesarios
@@ -73,7 +73,7 @@ object RetrofitClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create()) // Se asume GsonConverterFactory
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
