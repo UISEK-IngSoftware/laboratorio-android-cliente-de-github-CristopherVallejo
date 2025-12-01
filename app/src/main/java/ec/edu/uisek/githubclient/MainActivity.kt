@@ -15,6 +15,8 @@ import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), RepositoryActionListener {
 
+    // ... (variables y métodos setup, onResume, setupRecyclerView) ...
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var reposAdapter: RepoAdapter
 
@@ -55,7 +57,11 @@ class MainActivity : AppCompatActivity(), RepositoryActionListener {
                 } else {
 
                     val errMsg = when (response.code()) {
-                        401 -> "Error 401: Token inválido o no autorizado."
+                        // 🚨 CLAVE: Si hay un error 401 (No autorizado), regresamos al Login
+                        401 -> {
+                            handleUnauthorized()
+                            "Error 401: Token inválido o no autorizado. Vuelve a iniciar sesión."
+                        }
                         403 -> "Error 403: Acceso prohibido (Falta de permisos)."
                         404 -> "Error 404: Recurso no encontrado."
                         else -> "Error ${response.code()}: ${response.message()}. ${response.errorBody()?.string()}"
@@ -73,8 +79,19 @@ class MainActivity : AppCompatActivity(), RepositoryActionListener {
         })
     }
 
+    // 🚨 Nuevo método para manejar la redirección al login
+    private fun handleUnauthorized() {
+        showMessage("Sesión expirada o token inválido. Redirigiendo al inicio de sesión.")
+        val intent = Intent(this, LoginActivity::class.java).apply {
+            // Limpia la pila de actividades para que el usuario no pueda volver a MainActivity sin token
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+    }
+
 
     private fun displayRepoForm(isEditMode: Boolean, repo: Repo?) {
+        // ... (resto del método displayRepoForm sin cambios) ...
         val intent = Intent(this, RepoForm::class.java).apply {
             if (isEditMode && repo != null) {
                 putExtra("MODE", "EDIT")
@@ -103,7 +120,13 @@ class MainActivity : AppCompatActivity(), RepositoryActionListener {
                     fetchRepositories() // Recarga la lista
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    val errMsg = "Error al eliminar: ${response.code()}. ${errorBody}"
+                    val errMsg = when (response.code()) {
+                        401 -> {
+                            handleUnauthorized()
+                            "Error 401: Token inválido al eliminar. Reintentando..."
+                        }
+                        else -> "Error al eliminar: ${response.code()}. ${errorBody}"
+                    }
                     Log.e("MainActivity", errMsg)
                     showMessage(errMsg)
                 }
